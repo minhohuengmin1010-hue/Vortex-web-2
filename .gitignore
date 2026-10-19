@@ -1,0 +1,13 @@
+/session/
+/sessions/
+*.json.bak
+bun.lock
+pnpm-lock.yaml
+package-lock.json
+/node_modules/
+.env
+.env.local
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

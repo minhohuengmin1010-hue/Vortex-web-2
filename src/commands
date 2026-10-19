@@ -1,0 +1,72 @@
+export async function handleAdminControls(sock, msg, command, args, sender) {
+  const from = msg.key.remoteJid;
+  const targetUser = msg.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0] || 
+                     (args[1] ? (args[1].includes('@') ? args[1].replace('@', '') + '@s.whatsapp.net' : args[1] + '@s.whatsapp.net') : null);
+
+  switch (command) {
+    case '.promote':
+      if (!targetUser) return await sock.sendMessage(from, { text: '⚠️ Mention a user!\n*Example:* `.promote @user`' }, { quoted: msg });
+      await sock.sendMessage(from, { text: `👑 @${targetUser.split('@')[0]} promoted to Admin!`, mentions: [targetUser] }, { quoted: msg });
+      break;
+
+    case '.demote':
+      if (!targetUser) return await sock.sendMessage(from, { text: '⚠️ Mention a user!\n*Example:* `.demote @user`' }, { quoted: msg });
+      await sock.sendMessage(from, { text: `❌ @${targetUser.split('@')[0]} demoted from Admin!`, mentions: [targetUser] }, { quoted: msg });
+      break;
+
+    case '.kick':
+      if (!targetUser) return await sock.sendMessage(from, { text: '⚠️ Mention a user to kick!\n*Example:* `.kick @user`' }, { quoted: msg });
+      try {
+        await sock.groupParticipantsUpdate(from, [targetUser], 'remove');
+        await sock.sendMessage(from, { text: `🦵 @${targetUser.split('@')[0]} kicked from the group!`, mentions: [targetUser] }, { quoted: msg });
+      } catch (err) {
+        await sock.sendMessage(from, { text: `❌ Failed to kick user. Ensure bot is group admin.` }, { quoted: msg });
+      }
+      break;
+
+    case '.ban':
+      if (!targetUser) return await sock.sendMessage(from, { text: '⚠️ Mention a user to ban!\n*Example:* `.ban @user`' }, { quoted: msg });
+      await sock.sendMessage(from, { text: `🚫 @${targetUser.split('@')[0]} banned from using the bot!`, mentions: [targetUser] }, { quoted: msg });
+      break;
+
+    case '.unban':
+      if (!targetUser) return await sock.sendMessage(from, { text: '⚠️ Mention a user to unban!\n*Example:* `.unban @user`' }, { quoted: msg });
+      await sock.sendMessage(from, { text: `✅ @${targetUser.split('@')[0]} unbanned!`, mentions: [targetUser] }, { quoted: msg });
+      break;
+
+    case '.add-coins':
+      const addAmt = args[2] || '1000';
+      await sock.sendMessage(from, { text: `➕ Added 🪙 ${addAmt} coins to wallet!`, mentions: [targetUser || sender] }, { quoted: msg });
+      break;
+
+    case '.remove-coins':
+      const remAmt = args[2] || '500';
+      await sock.sendMessage(from, { text: `➖ Deducted 🪙 ${remAmt} coins from wallet!`, mentions: [targetUser || sender] }, { quoted: msg });
+      break;
+
+    case '.unlimited-coins':
+      await sock.sendMessage(from, { text: `♾️ Infinite Coins toggled **ON**!`, mentions: [sender] }, { quoted: msg });
+      break;
+
+    case '.unlimited-gems':
+      await sock.sendMessage(from, { text: `💎 Infinite Gems toggled **ON**!`, mentions: [sender] }, { quoted: msg });
+      break;
+
+    case '.broadcast':
+      const broadcastMsg = args.slice(1).join(' ');
+      if (!broadcastMsg) return await sock.sendMessage(from, { text: '⚠️ Provide a broadcast message!' }, { quoted: msg });
+      await sock.sendMessage(from, { text: `📢 *GLOBAL BROADCAST:*\n\n${broadcastMsg}` }, { quoted: msg });
+      break;
+
+    case '.make-mod':
+      await sock.sendMessage(from, { text: `🛡️ @${targetUser?.split('@')[0]} appointed as Moderator!`, mentions: [targetUser] }, { quoted: msg });
+      break;
+
+    case '.unmake-mod':
+      await sock.sendMessage(from, { text: `❌ Removed Moderator status from @${targetUser?.split('@')[0]}!`, mentions: [targetUser] }, { quoted: msg });
+      break;
+
+    default:
+      break;
+  }
+}

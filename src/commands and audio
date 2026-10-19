@@ -1,0 +1,12 @@
+export async function handleAudio(sock, msg, command, args, sender) {
+  const from = msg.key.remoteJid;
+  if (command === '.tt-audio') {
+    if (!args[1]) return await sock.sendMessage(from, { text: '⚠️ Provide a TikTok link!' }, { quoted: msg });
+    await sock.sendMessage(from, { text: '🎵 Extracting audio track...' }, { quoted: msg });
+  } else if (command === '.voice-morph') {
+    const textToSpeak = args.slice(1).join(' ');
+    if (!textToSpeak) return await sock.sendMessage(from, { text: '🎙️ Provide text to convert to voice!' }, { quoted: msg });
+    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(textToSpeak)}&tl=en&client=tw-ob`;
+    await sock.sendMessage(from, { audio: { url: ttsUrl }, mimetype: 'audio/mp4', ptt: true }, { quoted: msg });
+  }
+}

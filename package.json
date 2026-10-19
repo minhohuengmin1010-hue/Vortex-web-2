@@ -1,0 +1,19 @@
+{
+  "name": "vortex-bot",
+  "version": "22.0.0",
+  "description": "Vortex WhatsApp Multi-Device Omni-Core Engine",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.js",
+    "dev": "bun --watch src/index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.5",
+    "pino": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
